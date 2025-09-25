@@ -1,1 +1,50 @@
-import React,{useEffect,useState} from 'react';import {useAuth} from '../auth/AuthContext';export default function Profile(){const{api}=useAuth();const[form,setForm]=useState({displayName:'',phone:'',email:''});const[msg,setMsg]=useState('');useEffect(()=>{api.get('/api/users/me').then(r=>setForm({displayName:r.data.displayName||'',phone:r.data.phone||'',email:r.data.email}))},[]);const save=async()=>{setMsg('');try{await api.patch('/api/users/me',{displayName:form.displayName,phone:form.phone});setMsg('Saved')}catch{setMsg('Failed')}};return(<div><h2>My Profile</h2><p>Email: <b>{form.email}</b></p><input placeholder='Display Name' value={form.displayName} onChange={e=>setForm({...form,displayName:e.target.value})}/><input placeholder='Phone' value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/><button onClick={save}>Save</button><p>{msg}</p></div>)}
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../auth/AuthContext";
+export default function Profile() {
+  const { api } = useAuth();
+  const [form, setForm] = useState({ displayName: "", phone: "", email: "" });
+  const [msg, setMsg] = useState("");
+  useEffect(() => {
+    api
+      .get("/api/users/me")
+      .then((r) =>
+        setForm({
+          displayName: r.data.displayName || "",
+          phone: r.data.phone || "",
+          email: r.data.email,
+        })
+      );
+  }, []);
+  const save = async () => {
+    setMsg("");
+    try {
+      await api.patch("/api/users/me", {
+        displayName: form.displayName,
+        phone: form.phone,
+      });
+      setMsg("Saved");
+    } catch {
+      setMsg("Failed");
+    }
+  };
+  return (
+    <div>
+      <h2>My Profile</h2>
+      <p>
+        Email: <b>{form.email}</b>
+      </p>
+      <input
+        placeholder="Display Name"
+        value={form.displayName}
+        onChange={(e) => setForm({ ...form, displayName: e.target.value })}
+      />
+      <input
+        placeholder="Phone"
+        value={form.phone}
+        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+      />
+      <button onClick={save}>Save</button>
+      <p>{msg}</p>
+    </div>
+  );
+}

@@ -1,1 +1,60 @@
-import React,{useState} from 'react';import {useNavigate} from 'react-router-dom';import {useAuth} from '../auth/AuthContext';export default function Register(){const nav=useNavigate();const{register}=useAuth();const[form,setForm]=useState({nic:'991234567V',email:'ev.owner@example.com',password:'Password123!',displayName:'John EV',phone:'0712345678'});const[err,setErr]=useState('');const onSubmit=async e=>{e.preventDefault();setErr('');try{await register(form);nav('/stations')}catch{setErr('Registration failed')}};return(<div><h2>Register</h2><form onSubmit={onSubmit}><input placeholder='NIC' value={form.nic} onChange={e=>setForm({...form,nic:e.target.value})}/><input placeholder='Email' value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/><input placeholder='Password' type='password' value={form.password} onChange={e=>setForm({...form,password:e.target.value})}/><input placeholder='Display Name' value={form.displayName} onChange={e=>setForm({...form,displayName:e.target.value})}/><input placeholder='Phone' value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/><button>Create</button></form>{err&&<p style={{color:'red'}}>{err}</p>}</div>)}
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+export default function Register() {
+  const nav = useNavigate();
+  const { register } = useAuth();
+  const [form, setForm] = useState({
+    nic: "991234567V",
+    email: "ev.owner@example.com",
+    password: "Password123!",
+    displayName: "John EV",
+    phone: "0712345678",
+  });
+  const [err, setErr] = useState("");
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setErr("");
+    try {
+      await register(form);
+      nav("/stations");
+    } catch {
+      setErr("Registration failed");
+    }
+  };
+  return (
+    <div>
+      <h2>Register</h2>
+      <form onSubmit={onSubmit}>
+        <input
+          placeholder="NIC"
+          value={form.nic}
+          onChange={(e) => setForm({ ...form, nic: e.target.value })}
+        />
+        <input
+          placeholder="Email"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+        <input
+          placeholder="Password"
+          type="password"
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+        />
+        <input
+          placeholder="Display Name"
+          value={form.displayName}
+          onChange={(e) => setForm({ ...form, displayName: e.target.value })}
+        />
+        <input
+          placeholder="Phone"
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        />
+        <button>Create</button>
+      </form>
+      {err && <p style={{ color: "red" }}>{err}</p>}
+    </div>
+  );
+}

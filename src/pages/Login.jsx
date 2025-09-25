@@ -1,1 +1,40 @@
-import React,{useState} from 'react';import {useNavigate} from 'react-router-dom';import {useAuth} from '../auth/AuthContext';export default function Login(){const nav=useNavigate();const{login}=useAuth();const[emailOrNic,setId]=useState('ev.owner@example.com');const[password,setPw]=useState('Password123!');const[err,setErr]=useState('');const onSubmit=async e=>{e.preventDefault();setErr('');try{await login(emailOrNic,password);nav('/stations')}catch{setErr('Login failed')}};return(<div><h2>Login</h2><form onSubmit={onSubmit}><input value={emailOrNic} onChange={e=>setId(e.target.value)} placeholder='Email or NIC'/><input value={password} onChange={e=>setPw(e.target.value)} placeholder='Password' type='password'/><button>Login</button></form>{err&&<p style={{color:'red'}}>{err}</p>}</div>)}
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+export default function Login() {
+  const nav = useNavigate();
+  const { login } = useAuth();
+  const [emailOrNic, setId] = useState("ev.owner@example.com");
+  const [password, setPw] = useState("Password123!");
+  const [err, setErr] = useState("");
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setErr("");
+    try {
+      await login(emailOrNic, password);
+      nav("/stations");
+    } catch {
+      setErr("Login failed");
+    }
+  };
+  return (
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={onSubmit}>
+        <input
+          value={emailOrNic}
+          onChange={(e) => setId(e.target.value)}
+          placeholder="Email or NIC"
+        />
+        <input
+          value={password}
+          onChange={(e) => setPw(e.target.value)}
+          placeholder="Password"
+          type="password"
+        />
+        <button>Login</button>
+      </form>
+      {err && <p style={{ color: "red" }}>{err}</p>}
+    </div>
+  );
+}

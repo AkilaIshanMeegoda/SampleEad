@@ -1,1 +1,78 @@
-import React,{useState} from 'react';import {useAuth} from '../../auth/AuthContext';import QRCode from 'qrcode.react';export default function OperatorPanel(){const{api}=useAuth();const[bookingId,setBookingId]=useState('');const[qr,setQr]=useState('');const[scanPayload,setScanPayload]=useState('');const[scanResult,setScanResult]=useState(null);const[msg,setMsg]=useState('');const approve=async()=>{setMsg('');setQr('');try{const{data}=await api.post('/api/bookings/'+bookingId+'/approve');setQr(data.qrPayload)}catch(e){setMsg('Error')}};const scan=async()=>{setMsg('');setScanResult(null);try{const{data}=await api.post('/api/bookings/scan',{qrPayload:scanPayload});setScanResult(data)}catch(e){setMsg('Invalid QR')}};const complete=async()=>{setMsg('');try{await api.post('/api/bookings/'+bookingId+'/complete');setMsg('Completed.')}catch(e){setMsg('Error')}};return(<div><h2>Operator Panel</h2><div><input placeholder='Booking ID' value={bookingId} onChange={e=>setBookingId(e.target.value)}/><button onClick={approve}>Approve → QR</button><button onClick={complete}>Complete</button></div>{qr&&<div><p>QR Payload:</p><code style={{wordBreak:'break-all'}}>{qr}</code><div style={{marginTop:12}}><QRCode value={qr} size={180}/></div></div>}<h3>Scan (simulate)</h3><div><input placeholder='Paste QR payload here' value={scanPayload} onChange={e=>setScanPayload(e.target.value)}/><button onClick={scan}>Verify</button></div>{scanResult&&<pre>{JSON.stringify(scanResult,null,2)}</pre>}<p>{msg}</p></div>)}
+import React, { useState } from "react";
+import { useAuth } from "../../auth/AuthContext";
+import QRCode from "qrcode.react";
+export default function OperatorPanel() {
+  const { api } = useAuth();
+  const [bookingId, setBookingId] = useState("");
+  const [qr, setQr] = useState("");
+  const [scanPayload, setScanPayload] = useState("");
+  const [scanResult, setScanResult] = useState(null);
+  const [msg, setMsg] = useState("");
+  const approve = async () => {
+    setMsg("");
+    setQr("");
+    try {
+      const { data } = await api.post(
+        "/api/bookings/" + bookingId + "/approve"
+      );
+      setQr(data.qrPayload);
+    } catch (e) {
+      setMsg("Error");
+    }
+  };
+  const scan = async () => {
+    setMsg("");
+    setScanResult(null);
+    try {
+      const { data } = await api.post("/api/bookings/scan", {
+        qrPayload: scanPayload,
+      });
+      setScanResult(data);
+    } catch (e) {
+      setMsg("Invalid QR");
+    }
+  };
+  const complete = async () => {
+    setMsg("");
+    try {
+      await api.post("/api/bookings/" + bookingId + "/complete");
+      setMsg("Completed.");
+    } catch (e) {
+      setMsg("Error");
+    }
+  };
+  return (
+    <div>
+      <h2>Operator Panel</h2>
+      <div>
+        <input
+          placeholder="Booking ID"
+          value={bookingId}
+          onChange={(e) => setBookingId(e.target.value)}
+        />
+        <button onClick={approve}>Approve → QR</button>
+        <button onClick={complete}>Complete</button>
+      </div>
+      {qr && (
+        <div>
+          <p>QR Payload:</p>
+          <code style={{ wordBreak: "break-all" }}>{qr}</code>
+          <div style={{ marginTop: 12 }}>
+            <QRCode value={qr} size={180} />
+          </div>
+        </div>
+      )}
+      <h3>Scan (simulate)</h3>
+      <div>
+        <input
+          placeholder="Paste QR payload here"
+          value={scanPayload}
+          onChange={(e) => setScanPayload(e.target.value)}
+        />
+        <button onClick={scan}>Verify</button>
+      </div>
+      {scanResult && <pre>{JSON.stringify(scanResult, null, 2)}</pre>}
+      <p>{msg}</p>
+    </div>
+  );
+}

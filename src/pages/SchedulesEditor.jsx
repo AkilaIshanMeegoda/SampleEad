@@ -1,1 +1,96 @@
-import React,{useEffect,useState} from 'react';import {useParams} from 'react-router-dom';import {useAuth} from '../auth/AuthContext';export default function SchedulesEditor(){const{id}=useParams();const{api,user}=useAuth();const[station,setStation]=useState(null);const[schedules,setSchedules]=useState([]);const[msg,setMsg]=useState('');useEffect(()=>{api.get('/api/stations/'+id).then(r=>{setStation(r.data);setSchedules(r.data.schedules||[])})},[id]);const canEditWindows=user?.role==='Backoffice';const onChange=(i,field,val)=>{setSchedules(schedules.map((s,idx)=>idx===i?{...s,[field]:val}:s))};const addWindow=()=>setSchedules([...schedules,{startUtc:'',endUtc:'',availableSlots:0}]);const save=async()=>{setMsg('');try{await api.put('/api/stations/'+id+'/schedules',{schedules});setMsg('Saved')}catch(e){setMsg('Error: '+(e.response?.data?.error||'Failed'))}};return(<div><h2>Schedules for {station?.name}</h2><table><thead><tr><th>StartUtc</th><th>EndUtc</th><th>Available</th></tr></thead><tbody>{schedules.map((s,i)=>(<tr key={i}><td>{canEditWindows?<input value={s.startUtc} onChange={e=>onChange(i,'startUtc',e.target.value)}/>:s.startUtc}</td><td>{canEditWindows?<input value={s.endUtc} onChange={e=>onChange(i,'endUtc',e.target.value)}/>:s.endUtc}</td><td><input type='number' value={s.availableSlots} onChange={e=>onChange(i,'availableSlots',parseInt(e.target.value||'0',10))}/></td></tr>))}</tbody></table><div style={{marginTop:8}}>{canEditWindows&&<button onClick={addWindow}>Add Window</button>}<button onClick={save} style={{marginLeft:8}}>Save</button></div><p>{msg}</p></div>)}
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+export default function SchedulesEditor() {
+  const { id } = useParams();
+  const { api, user } = useAuth();
+  const [station, setStation] = useState(null);
+  const [schedules, setSchedules] = useState([]);
+  const [msg, setMsg] = useState("");
+  useEffect(() => {
+    api.get("/api/stations/" + id).then((r) => {
+      setStation(r.data);
+      setSchedules(r.data.schedules || []);
+    });
+  }, [id]);
+  const canEditWindows = user?.role === "Backoffice";
+  const onChange = (i, field, val) => {
+    setSchedules(
+      schedules.map((s, idx) => (idx === i ? { ...s, [field]: val } : s))
+    );
+  };
+  const addWindow = () =>
+    setSchedules([
+      ...schedules,
+      { startUtc: "", endUtc: "", availableSlots: 0 },
+    ]);
+  const save = async () => {
+    setMsg("");
+    try {
+      await api.put("/api/stations/" + id + "/schedules", { schedules });
+      setMsg("Saved");
+    } catch (e) {
+      setMsg("Error: " + (e.response?.data?.error || "Failed"));
+    }
+  };
+  return (
+    <div>
+      <h2>Schedules for {station?.name}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>StartUtc</th>
+            <th>EndUtc</th>
+            <th>Available</th>
+          </tr>
+        </thead>
+        <tbody>
+          {schedules.map((s, i) => (
+            <tr key={i}>
+              <td>
+                {canEditWindows ? (
+                  <input
+                    value={s.startUtc}
+                    onChange={(e) => onChange(i, "startUtc", e.target.value)}
+                  />
+                ) : (
+                  s.startUtc
+                )}
+              </td>
+              <td>
+                {canEditWindows ? (
+                  <input
+                    value={s.endUtc}
+                    onChange={(e) => onChange(i, "endUtc", e.target.value)}
+                  />
+                ) : (
+                  s.endUtc
+                )}
+              </td>
+              <td>
+                <input
+                  type="number"
+                  value={s.availableSlots}
+                  onChange={(e) =>
+                    onChange(
+                      i,
+                      "availableSlots",
+                      parseInt(e.target.value || "0", 10)
+                    )
+                  }
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div style={{ marginTop: 8 }}>
+        {canEditWindows && <button onClick={addWindow}>Add Window</button>}
+        <button onClick={save} style={{ marginLeft: 8 }}>
+          Save
+        </button>
+      </div>
+      <p>{msg}</p>
+    </div>
+  );
+}
