@@ -9,56 +9,70 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import OperatorPanel from "./pages/operator/OperatorPanel";
 import SchedulesEditor from "./pages/SchedulesEditor";
 import { useAuth, AuthProvider } from "./auth/AuthContext";
+
 function Shell() {
   const { user, logout } = useAuth();
   const nav = useNavigate();
+
   return (
-    <>
-      <div
-        style={{
-          padding: "12px",
-          borderBottom: "1px solid #ddd",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <div>
-          <Link to="/">EV Charging</Link>
-          {user && (
-            <span style={{ marginLeft: 8, opacity: 0.7 }}>[{user.role}]</span>
-          )}
+    <div className="min-h-screen bg-gray-950 text-gray-100">
+      {/* Navbar */}
+      <header className="bg-gray-900 border-b border-gray-800">
+        <div className="max-w-6xl mx-auto flex justify-between items-center px-4 py-3">
+          <div className="flex items-center gap-2">
+            <Link to="/" className="text-xl font-bold text-blue-400">
+              ⚡ EV Charging
+            </Link>
+            {user && (
+              <span className="px-2 py-1 rounded-full bg-gray-800 text-sm">
+                {user.role}
+              </span>
+            )}
+          </div>
+          <nav className="flex gap-4 items-center">
+            {user && <Link to="/stations">Stations</Link>}
+            {user?.role === "Backoffice" && (
+              <>
+                <Link to="/admin/stations">Admin Stations</Link>
+                <Link to="/admin/users">Admin Users</Link>
+              </>
+            )}
+            {user?.role === "StationOperator" && (
+              <Link to="/operator">Operator</Link>
+            )}
+            {user && <Link to="/profile">Profile</Link>}
+            {!user ? (
+              <>
+                <Link
+                  to="/login"
+                  className="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
+                >
+                  Register
+                </Link>
+              </>
+            ) : (
+              <button
+                className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
+                onClick={() => {
+                  logout();
+                  nav("/login");
+                }}
+              >
+                Logout
+              </button>
+            )}
+          </nav>
         </div>
-        <nav style={{ display: "flex", gap: 12 }}>
-          {user && <Link to="/stations">Stations</Link>}
-          {user?.role === "Backoffice" && (
-            <>
-              <Link to="/admin/stations">Admin Stations</Link>
-              <Link to="/admin/users">Admin Users</Link>
-            </>
-          )}
-          {user?.role === "StationOperator" && (
-            <Link to="/operator">Operator</Link>
-          )}
-          {user && <Link to="/profile">Profile</Link>}
-          {!user ? (
-            <>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
-            </>
-          ) : (
-            <a
-              href="#"
-              onClick={() => {
-                logout();
-                nav("/login");
-              }}
-            >
-              Logout
-            </a>
-          )}
-        </nav>
-      </div>
-      <div style={{ padding: 16 }}>
+      </header>
+
+      {/* Routes */}
+      <main className="max-w-6xl mx-auto p-6">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -113,24 +127,33 @@ function Shell() {
           />
           <Route path="*" element={<div>Not found</div>} />
         </Routes>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }
+
 function Home() {
-  return <div>Welcome</div>;
+  return (
+    <div className="p-6 bg-gray-900 rounded-lg shadow">
+      <h2 className="text-2xl font-semibold mb-2">Welcome</h2>
+      <p>Sign in to manage bookings and stations.</p>
+    </div>
+  );
 }
+
 function RequireAuth({ children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   return children;
 }
+
 function RequireRole({ role, children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== role) return <Navigate to="/" replace />;
   return children;
 }
+
 export default function App() {
   return (
     <AuthProvider>

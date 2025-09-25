@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { Link } from "react-router-dom";
+
 export default function AdminStations() {
   const { api } = useAuth();
   const [form, setForm] = useState({
@@ -11,17 +12,21 @@ export default function AdminStations() {
     totalSlots: 4,
   });
   const [items, setItems] = useState([]);
+
   const load = async () => {
     const { data } = await api.get("/api/stations");
     setItems(data);
   };
+
   useEffect(() => {
     load();
   }, []);
+
   const create = async () => {
     await api.post("/api/stations", form);
     await load();
   };
+
   const toggleActive = async (st) => {
     if (st.active) {
       await api.patch("/api/stations/" + st.id + "/deactivate");
@@ -30,30 +35,31 @@ export default function AdminStations() {
     }
     await load();
   };
+
   return (
-    <div>
-      <h2>Admin Stations</h2>
-      <div>
+    <div className="max-w-4xl mx-auto mt-10">
+      <h2 className="text-2xl font-semibold mb-4">Admin: Stations</h2>
+      <div className="flex flex-wrap gap-3 bg-gray-900 p-4 rounded-lg mb-6">
         <input
+          className="p-2 bg-gray-800 border border-gray-700 rounded"
           placeholder="Name"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
         <input
+          className="p-2 bg-gray-800 border border-gray-700 rounded w-28"
           placeholder="Lat"
           value={form.lat}
-          onChange={(e) =>
-            setForm({ ...form, lat: parseFloat(e.target.value) })
-          }
+          onChange={(e) => setForm({ ...form, lat: parseFloat(e.target.value) })}
         />
         <input
+          className="p-2 bg-gray-800 border border-gray-700 rounded w-28"
           placeholder="Lng"
           value={form.lng}
-          onChange={(e) =>
-            setForm({ ...form, lng: parseFloat(e.target.value) })
-          }
+          onChange={(e) => setForm({ ...form, lng: parseFloat(e.target.value) })}
         />
         <select
+          className="p-2 bg-gray-800 border border-gray-700 rounded"
           value={form.type}
           onChange={(e) => setForm({ ...form, type: e.target.value })}
         >
@@ -61,7 +67,8 @@ export default function AdminStations() {
           <option>DC</option>
         </select>
         <input
-          placeholder="Total Slots"
+          className="p-2 bg-gray-800 border border-gray-700 rounded w-28"
+          placeholder="Slots"
           value={form.totalSlots}
           onChange={(e) =>
             setForm({
@@ -70,21 +77,35 @@ export default function AdminStations() {
             })
           }
         />
-        <button onClick={create}>Create</button>
+        <button
+          onClick={create}
+          className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-white"
+        >
+          Create
+        </button>
       </div>
-      <div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {items.map((s) => (
-          <div
-            key={s.id}
-            style={{ border: "1px solid #ddd", padding: 8, margin: "8px 0" }}
-          >
-            <b>{s.name}</b> [{s.type}] Slots:{s.totalSlots} Active:
-            {String(s.active)}{" "}
-            <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+          <div key={s.id} className="bg-gray-900 p-4 rounded-lg shadow">
+            <h3 className="text-lg font-semibold">{s.name}</h3>
+            <p className="text-sm text-gray-400">
+              [{s.type}] • Slots: {s.totalSlots} • Active: {String(s.active)}
+            </p>
+            <div className="flex gap-3 mt-3">
               <Link to={"/schedules/" + s.id}>
-                <button>Edit Schedules</button>
+                <button className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">
+                  Edit Schedules
+                </button>
               </Link>
-              <button onClick={() => toggleActive(s)}>
+              <button
+                onClick={() => toggleActive(s)}
+                className={`px-3 py-1 rounded text-white ${
+                  s.active
+                    ? "bg-red-600 hover:bg-red-500"
+                    : "bg-green-600 hover:bg-green-500"
+                }`}
+              >
                 {s.active ? "Deactivate" : "Activate"}
               </button>
             </div>
