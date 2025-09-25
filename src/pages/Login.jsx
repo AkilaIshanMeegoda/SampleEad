@@ -32,7 +32,7 @@ export default function Login() {
           placeholder="Password"
           type="password"
         />
-        <button>Login</button>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded">Login</button>
       </form>
       {err && <p style={{ color: "red" }}>{err}</p>}
     </div>
